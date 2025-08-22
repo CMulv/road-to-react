@@ -54,22 +54,37 @@ const App = () => {
   return (
     <div>
       <h1>My Road to React</h1>
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      />
       <hr />
       <List list={searchedStories} />
     </div>
   );
 };
 
-type SearchProps = {
-  search: string;
-  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+type InputWithLabelProps = {
+  id: string;
+  label: string;
+  value: string;
+  type?: React.HTMLInputTypeAttribute;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Search = ({ search, onSearch }: SearchProps) => (
+const InputWithLabel = ({
+  id,
+  label,
+  value,
+  type = "text",
+  onInputChange,
+}: InputWithLabelProps) => (
   <>
-    <label htmlFor="search">Search: </label>
-    <input id="search" type="text" value={search} onChange={onSearch} />
+    <label htmlFor={id}>{label}</label>
+    &nbsp;
+    <input id={id} type={type} value={value} onChange={onInputChange} />
   </>
 );
 
