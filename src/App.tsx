@@ -58,6 +58,7 @@ const App = () => {
         id="search"
         value={searchTerm}
         onInputChange={handleSearch}
+        isFocused
       >
         <strong>Search:</strong>
       </InputWithLabel>
@@ -72,6 +73,7 @@ type InputWithLabelProps = {
   value: string;
   type?: React.HTMLInputTypeAttribute;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isFocused?: boolean;
   children?: React.ReactNode;
 };
 
@@ -80,14 +82,31 @@ const InputWithLabel = ({
   value,
   type = "text",
   onInputChange,
+  isFocused = false,
   children,
-}: InputWithLabelProps) => (
-  <>
-    <label htmlFor={id}>{children}</label>
-    &nbsp;
-    <input id={id} type={type} value={value} onChange={onInputChange} />
-  </>
-);
+}: InputWithLabelProps) => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
+    </>
+  );
+};
 
 type ListProps = {
   list: Story[];
