@@ -9,6 +9,20 @@ type Story = {
   objectID: number;
 };
 
+type StoriesState = Story[];
+
+type StoriesSetAction = {
+  type: "SET_STORIES";
+  payload: Story[];
+};
+
+type StoriesRemoveAction = {
+  type: "REMOVE_STORY";
+  payload: Story;
+};
+
+type StoriesAction = StoriesSetAction | StoriesRemoveAction;
+
 const initialStories: Story[] = [
   {
     title: "React",
@@ -33,6 +47,19 @@ const getAsyncStories = (): Promise<{ data: { stories: Story[] } }> =>
     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000)
   );
 
+const storiesReducer = (state: StoriesState, action: StoriesAction) => {
+  switch (action.type) {
+    case "SET_STORIES":
+      return action.payload;
+    case "REMOVE_STORY":
+      return state.filter(
+        (story) => action.payload.objectID !== story.objectID
+      );
+    default:
+      throw new Error();
+  }
+};
+
 const useStorageState = (key: string, initialState: string) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
@@ -47,25 +74,22 @@ const useStorageState = (key: string, initialState: string) => {
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
-  const [stories, setStories] = React.useState<Story[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isError, setIsError] = React.useState<boolean>(false);
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, []);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
 
   React.useEffect(() => {
     setIsLoading(true);
     getAsyncStories()
       .then((result) => {
-        setStories(result.data.stories);
+        dispatchStories({ type: "SET_STORIES", payload: result.data.stories });
         setIsLoading(false);
       })
       .catch(() => setIsError(true));
   }, []);
 
   const handleRemoveStory = (item: Story) => {
-    const newStories = stories.filter(
-      (story) => item.objectID !== story.objectID
-    );
-    setStories(newStories);
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
