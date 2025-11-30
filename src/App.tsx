@@ -119,10 +119,8 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchSubmit = (event: React.FormEvent) => {
+  const searchAction = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
-
-    event.preventDefault();
   };
 
   return (
@@ -132,7 +130,7 @@ const App = () => {
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
-        onSearchSubmit={handleSearchSubmit}
+        searchAction={searchAction}
       />
 
       <hr />
@@ -151,15 +149,15 @@ const App = () => {
 type SearchFormProps = {
   searchTerm: string;
   onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  searchAction: () => void;
 };
 
 const SearchForm: React.FC<SearchFormProps> = ({
   searchTerm,
-  onSearchSubmit,
   onSearchInput,
+  searchAction,
 }) => (
-  <form onSubmit={onSearchSubmit}>
+  <form action={searchAction}>
     <InputWithLabel
       id="search"
       value={searchTerm}
