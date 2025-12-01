@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as React from "react";
 import "./App.css";
+import { Check } from "./Check";
 
 type Story = {
   title: string;
@@ -250,7 +251,7 @@ const Item = ({ item, onRemoveItem }: ItemProps) => (
         onClick={() => onRemoveItem(item)}
         className="button button_small"
       >
-        Dismiss
+        <Check height="18px" width="18px" />
       </button>
     </span>
   </li>
