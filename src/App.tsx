@@ -1,5 +1,6 @@
 import * as React from "react";
 import axios from "axios";
+import styles from "./App.module.css";
 
 type Story = {
   title: string;
@@ -124,16 +125,14 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>My Road to React</h1>
+    <div className={styles.container}>
+      <h1 className={styles.headlinePrimary}>My Road to React</h1>
 
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         searchAction={searchAction}
       />
-
-      <hr />
 
       {stories.isError && <p>Something went wrong...</p>}
 
@@ -157,7 +156,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
   onSearchInput,
   searchAction,
 }) => (
-  <form action={searchAction}>
+  <form action={searchAction} className={styles.searchForm}>
     <InputWithLabel
       id="search"
       value={searchTerm}
@@ -166,7 +165,11 @@ const SearchForm: React.FC<SearchFormProps> = ({
     >
       <strong>Search:</strong>
     </InputWithLabel>
-    <button type="submit" disabled={!searchTerm}>
+    <button
+      type="submit"
+      disabled={!searchTerm}
+      className={`${styles.button} ${styles.buttonLarge}`}
+    >
       Submit
     </button>
   </form>
@@ -199,7 +202,9 @@ const InputWithLabel = ({
 
   return (
     <>
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id} className={styles.label}>
+        {children}
+      </label>
       &nbsp;
       <input
         ref={inputRef}
@@ -207,6 +212,7 @@ const InputWithLabel = ({
         type={type}
         value={value}
         onChange={onInputChange}
+        className={styles.input}
       />
     </>
   );
@@ -231,15 +237,19 @@ type ItemProps = {
 };
 
 const Item = ({ item, onRemoveItem }: ItemProps) => (
-  <li>
-    <span>
+  <li className={styles.item}>
+    <span style={{ width: "40%" }}>
       <a href={item.url}>{item.title}</a>
     </span>
-    <span>{item.author}</span>
-    <span>{item.num_comments}</span>
-    <span>{item.points}</span>
-    <span>
-      <button type="button" onClick={() => onRemoveItem(item)}>
+    <span style={{ width: "30%" }}>{item.author}</span>
+    <span style={{ width: "10%" }}>{item.num_comments}</span>
+    <span style={{ width: "10%" }}>{item.points}</span>
+    <span style={{ width: "10%" }}>
+      <button
+        type="button"
+        onClick={() => onRemoveItem(item)}
+        className={`${styles.button} ${styles.buttonSmall}`}
+      >
         Dismiss
       </button>
     </span>
