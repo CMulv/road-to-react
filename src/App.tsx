@@ -72,18 +72,28 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
 };
 
 const useStorageState = (key: string, initialState: string) => {
+  const isMounted = React.useRef(false);
+
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue] as const;
 };
 
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
+const getSumComments = (storiesData: Story[]) => {
+  return storiesData.reduce((result, value) => result + value.num_comments, 0);
+};
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
@@ -113,9 +123,9 @@ const App = () => {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleRemoveStory = (item: Story) => {
+  const handleRemoveStory = React.useCallback((item: Story) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
-  };
+  }, []);
 
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -125,9 +135,16 @@ const App = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
+  const sumComments = React.useMemo(
+    () => getSumComments(stories.data),
+    [stories]
+  );
+
   return (
     <div className="container">
-      <h1 className="headline-primary">My Hacker Stories</h1>
+      <h1 className="headline-primary">
+        My Hacker Stories with {sumComments} comments.
+      </h1>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -224,13 +241,15 @@ type ListProps = {
   onRemoveItem: (item: Story) => void;
 };
 
-const List = ({ list, onRemoveItem }: ListProps) => (
-  <ul>
-    {list.map((item) => (
-      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-    ))}
-  </ul>
-);
+const List = React.memo(({ list, onRemoveItem }: ListProps) => {
+  return (
+    <ul>
+      {list.map((item) => (
+        <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
+      ))}
+    </ul>
+  );
+});
 
 type ItemProps = {
   item: Story;
