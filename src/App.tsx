@@ -14,20 +14,20 @@ type Story = {
 
 type StoriesState = { data: Story[]; isLoading: boolean; isError: boolean };
 
-type StoriesFetchInitAction = {
+export type StoriesFetchInitAction = {
   type: "STORIES_FETCH_INIT";
 };
 
-type StoriesFetchSuccessAction = {
+export type StoriesFetchSuccessAction = {
   type: "STORIES_FETCH_SUCCESS";
   payload: Story[];
 };
 
-type StoriesFetchFailureAction = {
+export type StoriesFetchFailureAction = {
   type: "STORIES_FETCH_FAILURE";
 };
 
-type StoriesRemoveAction = {
+export type StoriesRemoveAction = {
   type: "REMOVE_STORY";
   payload: Story;
 };
@@ -277,3 +277,5 @@ const Item = ({ item, onRemoveItem }: ItemProps) => (
 );
 
 export default App;
+
+export { storiesReducer, SearchForm, InputWithLabel, List, Item };
